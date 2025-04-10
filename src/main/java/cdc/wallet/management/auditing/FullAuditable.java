@@ -1,8 +1,9 @@
-package cdc.wallet.management.util;
+package cdc.wallet.management.auditing;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import org.springframework.data.annotation.LastModifiedBy;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,5 +18,8 @@ public abstract class FullAuditable extends CreatedAuditable {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    @LastModifiedBy
+    private String updatedBy;
 
 }
