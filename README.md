@@ -1,2 +1,2 @@
-# spring_data_jpa_auditing_redis
-Basic spring boot application that shows Auditing provided by Spring Data JPA and cache using Redis
+# Wallet management application
+Spring Boot application for the wallet management functionality using Redis and Virtual Threads
