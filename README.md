@@ -1,2 +1,2 @@
 # Wallet management application
-Spring Boot application for the wallet management functionality using Redis and Virtual Threads
+Spring Boot application for the wallet management functionality using Redis and Kafka
