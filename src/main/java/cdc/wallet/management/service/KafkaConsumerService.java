@@ -38,7 +38,7 @@ public class KafkaConsumerService {
                     walletMaster.getWalletMasterId(), kafkaMessageDTO.getDescription());
             if (kafkaMessageDTO.getTotalAmount().signum() < 0)
                 walletTransactionService.addTransaction(kafkaMessageDTO.getTransactionAmount().abs(),
-                        kafkaMessageDTO.getWalletMasterId(), "Reversal");
+                        kafkaMessageDTO.getWalletMasterId(), "Reversal of " + kafkaMessageDTO.getDescription());
             else
                 walletMasterService.updateWalletMaster(walletMaster, kafkaMessageDTO.getTransactionAmount());
         } catch (Exception e) {
