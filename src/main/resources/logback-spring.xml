@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-    <!-- Define a variable for the base directory for log files -->
-    <property name="baseDir" value="logs" />
-    <!-- Console Appender for logging to the console -->
+<configuration scan="true" scanPeriod="30 seconds">
+
+    <!-- Variables -->
+    <property name="LOG_DIR" value="logs" />
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n" />
+
+    <!-- Console Appender -->
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>
-                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %highlight(%-36logger{36}) - %msg%n
-            </pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
-    <!-- Rolling File Appender for logging to files -->
+
+    <!-- Rolling File Appender -->
     <appender name="RollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${baseDir}/cdc.log</file>
-        <!-- Define a rolling policy -->
+        <file>${LOG_DIR}/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${baseDir}/archived/cdc-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize> <!-- Max size of a single log file -->
+            <fileNamePattern>${LOG_DIR}/archived/app-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>10MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %-36logger{36} - %msg%n</pattern>
+            <pattern>${LOG_PATTERN}</pattern>
         </encoder>
     </appender>
-    <!-- Logging -->
+
+    <!-- Application-specific logging -->
     <logger name="cdc.wallet.management" level="info" additivity="false">
-        <appender-ref ref="RollingFile" />
+        <appender-ref ref="RollingFile"/>
+        <appender-ref ref="Console"/>
     </logger>
-    <logger name="org.springframework.boot" level="error" additivity="false">
-        <appender-ref ref="RollingFile" />
-    </logger>
+
+    <!-- Suppress noisy logs -->
+    <logger name="org.springframework.boot" level="error"/>
+
+    <!-- Root Logger -->
     <root level="info">
         <appender-ref ref="RollingFile" />
     </root>
