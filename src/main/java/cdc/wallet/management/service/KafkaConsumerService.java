@@ -3,12 +3,12 @@ package cdc.wallet.management.service;
 import cdc.wallet.management.dto.KafkaMessageDTO;
 import cdc.wallet.management.model.WalletMaster;
 import cdc.wallet.management.repository.WalletMasterRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class KafkaConsumerService {
 
@@ -17,8 +17,6 @@ public class KafkaConsumerService {
     private final WalletMasterRepository walletMasterRepository;
 
     private final WalletTransactionService walletTransactionService;
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String WALLET_TOPIC = "wallet_topic";
 
@@ -44,7 +42,7 @@ public class KafkaConsumerService {
             else
                 walletMasterService.updateWalletMaster(walletMaster, kafkaMessageDTO.getTransactionAmount());
         } catch (Exception e) {
-            logger.error("Exception while consuming the topic:{}", e.getMessage());
+            log.error("Exception while consuming the topic:{}", e.getMessage());
         }
     }
 
