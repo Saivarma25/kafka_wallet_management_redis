@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 /**
  * Entity class which represents wallet in the application
  *
+ * @author Saivarma Akarapu
  */
 @Data
 @Entity
