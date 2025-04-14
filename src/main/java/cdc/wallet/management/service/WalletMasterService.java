@@ -95,14 +95,13 @@ public class WalletMasterService {
                 WALLET + walletMaster.getWalletMasterId(), walletDTO.getAmount().doubleValue()));
         if (newAmount < 0)
             // If new total is less than zero revert redis amount which is also thread safe
-            newAmount = Objects.requireNonNull(redisTemplate.opsForValue().increment(
-                    WALLET + walletMaster.getWalletMasterId(),
-                    walletDTO.getAmount().negate().doubleValue()));
+            redisTemplate.opsForValue().increment(
+                    WALLET + walletMaster.getWalletMasterId(), walletDTO.getAmount().negate().doubleValue());
 
         // Send transaction to kafka(fire and forgot)
         kafkaProducerService.sendWalletMessage(new KafkaMessageDTO(walletDTO.getWalletMasterId(),
-                new BigDecimal(String.valueOf(newAmount)), walletDTO.getAmount(), walletDTO.getDescription()));
-        walletDTO.setAmount(new BigDecimal(String.valueOf(newAmount)));
+                BigDecimal.valueOf(newAmount), walletDTO.getAmount(), walletDTO.getDescription()));
+        walletDTO.setAmount(BigDecimal.valueOf(newAmount));
         return walletDTO;
     }
 
