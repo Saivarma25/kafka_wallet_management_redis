@@ -21,7 +21,10 @@ public class KafkaProducerService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    // Fire and forget
+    /**
+     * Method to send transaction details to kafka which pushes in fire and forgot approach
+     * @param kafkaMessageDTO DTO that contains basic details to push a transaction to consumer
+     */
     public void sendWalletMessage(KafkaMessageDTO kafkaMessageDTO) {
         ProducerRecord<Long, KafkaMessageDTO> producerRecord = new ProducerRecord<>(
                 WALLET_TOPIC, kafkaMessageDTO.getWalletMasterId(), kafkaMessageDTO);
@@ -30,6 +33,7 @@ public class KafkaProducerService {
             if (ex != null)
                 log.error("Error sending message to Kafka for walletMasterId {}: {}",
                         kafkaMessageDTO.getWalletMasterId(), ex.getMessage());
+            // TODO Retry mechanism for failed transactions
         });
     }
 
