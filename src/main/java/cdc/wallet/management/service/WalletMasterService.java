@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class WalletMasterService {
@@ -89,14 +90,18 @@ public class WalletMasterService {
         WalletMaster walletMaster = self.getWalletMasterBalance(walletDTO.getWalletMasterId());
         if (walletMaster == null) return null;
 
-        BigDecimal newAmount = walletMaster.getBalance().add(walletDTO.getAmount());
-        if (newAmount.signum() >= 0)
-            redisTemplate.opsForValue().increment(WALLET + walletMaster.getWalletMasterId(),
-                    walletDTO.getAmount().doubleValue());
+        // Immediately updated redis for thread safety total check
+        double newAmount = Objects.requireNonNull(redisTemplate.opsForValue().increment(
+                WALLET + walletMaster.getWalletMasterId(), walletDTO.getAmount().doubleValue()));
+        if (newAmount < 0)
+            // If new total is less than zero revert redis amount which is also thread safe
+            redisTemplate.opsForValue().increment(
+                    WALLET + walletMaster.getWalletMasterId(), walletDTO.getAmount().negate().doubleValue());
 
+        // Send transaction to kafka(fire and forgot)
         kafkaProducerService.sendWalletMessage(new KafkaMessageDTO(walletDTO.getWalletMasterId(),
-                newAmount, walletDTO.getAmount(), walletDTO.getDescription()));
-        walletDTO.setAmount(newAmount);
+                BigDecimal.valueOf(newAmount), walletDTO.getAmount(), walletDTO.getDescription()));
+        walletDTO.setAmount(BigDecimal.valueOf(newAmount));
         return walletDTO;
     }
 
