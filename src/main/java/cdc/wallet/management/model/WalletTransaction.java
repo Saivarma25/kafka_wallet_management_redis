@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 /**
  * Entity class that represent transactions for all wallets in the application
  *
+ * @author Saivarma Akarapu
  */
 @Data
 @Entity
